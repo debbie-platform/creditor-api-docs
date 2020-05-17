@@ -155,7 +155,7 @@ paths:
           schema:
             $ref: "#/definitions/Creditor"
 
-  /webhooks:
+  /hooks:
     post:
       tags:
         - "Webhooks"
@@ -189,6 +189,7 @@ paths:
             items:
               $ref: "#/definitions/Webhook"
 
+  /hooks/:id:
     delete:
       tags:
         - "Webhooks"
