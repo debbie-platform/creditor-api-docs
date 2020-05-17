@@ -19,10 +19,6 @@ tags:
     description: "Everything about economy"
   - name: "Creditors"
     description: "Get creditors"
-  - name: "Updates"
-    description: "Update case"
-  - name: "Interactions"
-    description: "Create notes and messages"
   - name: "Webhooks"
     description: "Register new webhooks and delete them"
 schemes:
