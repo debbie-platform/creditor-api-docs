@@ -2,68 +2,162 @@ swagger: "2.0"
 info:
   description: "The Debbie APIs is a RESTful interface, allowing you to programmatically update, add and access much of your data on the platform. It provides predictable URLs for accessing resources, and uses built-in HTTP features to receive commands and return responses. This makes it easy to communicate with third party systems."
   version: "v1.0.0"
-  title: "Cosmo API Docs"
+  title: "Debbie Client API Docs"
   contact:
     email: "support@debbie.dk"
   x-logo:
-    url: "https://debbie-platform.github.io/cosmo-api-docs/deb-logo.svg"
-host: "api.cosmo.debbieapp.com"
+    url: "https://debbie-platform.github.io/client-api-docs/deb-logo.svg"
+host: "api.debbieapp.com"
 
 basePath: "/v1"
 tags:
-  - name: "Stars"
-    description: "Entities uploaded to Cosmo is called stars."
-  - name: "Users"
-    description: "Manipulate users of Cosmo."
+  - name: "General"
+    description: "The API fundamentals"
+  - name: "Cases"
+    description: "Everything about cases"
+  - name: "Economy"
+    description: "Everything about economy"
+  - name: "Creditors"
+    description: "Get creditors"
+  - name: "Updates"
+    description: "Update case"
+  - name: "Interactions"
+    description: "Create notes and messages"
   - name: "Webhooks"
-    description: "Webhooks to receive new events from Cosmo."
-
+    description: "Register new webhooks and delete them"
 schemes:
   - "https"
 paths:
-  /stars/subscribe:
+  /files:
     post:
       tags:
-        - "Stars"
-      summary: "Create webhook"
-      description: "All parameters should be send as part of the request body, in json format. An example of the body of a request hitting the /stars/subscribe endpoint would be."
-      operationId: "subscribe-star"
+        - "General"
+      summary: "Upload file"
+      description: "Store files like invoices and agreements by using this endpoint."
+      operationId: "upload-file"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
       parameters:
         - in: "body"
           name: "body"
-          description: "New subscribed star"
+          description: "Data for the file"
           required: true
           schema:
-            $ref: "#/definitions/NewStar"
-      responses:
-        "200":
-          description: "Successful operation"
-
-  /stars/unsubscribe/:referenceId:
-    put:
-      tags:
-        - "Stars"
-      summary: "Update star"
-      description: "Unsubscribes a user to a Star"
-      operationId: "Update star"
-      responses:
-        "200":
-          description: "Successful operation"
-
-  /stars/:referenceId:
-    get:
-      tags:
-        - "Stars"
-      summary: "Get Stars"
-      description: "Get star"
-      operationId: "get-star"
+            $ref: "#/definitions/NewFile"
       responses:
         "200":
           description: "Successful operation"
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Star"
+            $ref: "#/definitions/File"
+
+  /files/:fileId:
+    get:
+      tags:
+        - "General"
+      summary: "Retrieve files"
+      description: "Get uploaded files with this endpoint."
+      operationId: "get-file"
+      produces:
+        - "contentType"
+      responses:
+        "200":
+          description: "Successful operation"
+  /files/:fileId/:optionalFileName:
+    get:
+      tags:
+        - "General"
+      summary: "Retrieve files"
+      description: "Get uploaded files with this endpoint."
+      operationId: "get-file-with-optional-file-name"
+      produces:
+        - "contentType of file"
+      responses:
+        "200":
+          description: "Successful operation"
+        "404":
+          description: "Not found"
+  /cases:
+    post:
+      tags:
+        - "Cases"
+      summary: "Create new case"
+      description: "Upload new cases"
+      operationId: "create-case"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "New case object"
+          required: true
+          schema:
+            $ref: "#/definitions/NewCase"
+      responses:
+        "200":
+          description: "Successful operation"
+
+  /cases/:caseId:
+    get:
+      tags:
+        - "Cases"
+      summary: "Get case"
+      description: "Get a case by caseId"
+      operationId: "get-case"
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/Case"
+
+  /economy/:caseId:
+    post:
+      tags:
+        - "Economy"
+      summary: "Add deposit or debt"
+      description: "Add voucher"
+      operationId: "add-economy"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Bew economy object"
+          required: true
+          schema:
+            $ref: "#/definitions/NewEconomy"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/Economy"
+    get:
+      tags:
+        - "Economy"
+      summary: "Get economy on case"
+      description: "Add deposit to a case or without a case"
+      operationId: "get-economy"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/Economy"
+
+  /creditors:
+    get:
+      tags:
+        - "Creditors"
+      summary: "Get creditor"
+      description: "Get creditor"
+      operationId: "get-creditor"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/Creditor"
 
   /webhooks:
     post:
@@ -75,7 +169,7 @@ paths:
       parameters:
         - in: "body"
           name: "body"
-          description: "New webhook object"
+          description: "New economy object"
           required: true
           schema:
             $ref: "#/definitions/NewWebhook"
@@ -109,42 +203,12 @@ paths:
         "200":
           description: "Successful operation"
 
-  /users/create:
-    post:
-      tags:
-        - "Users"
-      summary: "Create user"
-      description: "Create new user"
-      operationId: "create-new-user"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "New user object"
-          required: true
-          schema:
-            $ref: "#/definitions/NewUser"
-      responses:
-        "200":
-          description: "Successful operation"
-
-  /users/DELETE:
-    delete:
-      tags:
-        - "Users"
-      summary: "Delete user"
-      description: "Delete created user"
-      operationId: "delete-user"
-      responses:
-        "200":
-          description: "Successful operation"
-
 securityDefinitions:
-  Header Parameter:
-    type: "apiKey"
-    name: "X-Cosmo-Auth-Token: <YOUR_VERY_SECRET_TOKEN>"
-    in: "header"
-    description: 'To authenticate any cosmoAPI request, you must include a "X-Cosmo-Auth-Token" header field, with your authentication token. Alternatively you can pass the authentication token as a query string parameter. The key/value pair should have the key "authToken" and the value should be your authentication token.'
   Query Parameter:
+    type: "apiKey"
+    name: "X-Debbie-Auth-Token: <YOUR_VERY_SECRET_TOKEN>"
+    in: "header"
+  Header Parameter:
     type: "apiKey"
     name: "authToken=<YOUR_VERY_SECRET_TOKEN>"
     in: "query"
@@ -163,40 +227,246 @@ definitions:
         type: "string"
       country:
         type: "string"
-  Phone:
+
+  Account:
     type: "object"
     properties:
-      number:
+      firstname:
         type: "string"
-      locale:
+      lastname:
+        type: "string"
+      permissionLevel:
+        type: "string"
+      accountId:
+        type: "string"
+
+  Price:
+    type: "object"
+    properties:
+      amount:
+        type: "number"
+      currency:
+        type: "string"
+
+  NewFile:
+    type: "object"
+    properties:
+      content:
+        type: "string"
+        format: "base64"
+      fileName:
+        type: "string"
+      contentType:
+        type: "string"
+
+  File:
+    type: "object"
+    properties:
+      fileId:
+        type: "string"
+
+  NewCase:
+    type: "object"
+    properties:
+      creditorReferenceId:
         type: "string"
       isCompany:
         type: "boolean"
-      referenceId:
+      creditorId:
         type: "string"
-      name:
+      debtors:
+        type: "object"
+        properties:
+          isCompany:
+            type: "boolean"
+          name:
+            type: "string"
+          cpr:
+            type: "string"
+          cvr:
+            type: "string"
+          email:
+            type: "string"
+          phone:
+            type: "string"
+          address:
+            $ref: "#/definitions/Address"
+      caseGroupId:
         type: "string"
-      address:
-        $ref: "#/definitions/Address"
-      email:
+      chainId:
         type: "string"
-      phone:
-        $ref: "#/definitions/Phone"
-      AKSEnroll:
+      caseImportId:
+        type: "string"
+      customerTerminated:
         type: "boolean"
-  NewStar:
-    type: "object"
-  Star:
-    type: "object"
-  NewUser:
+      financials:
+        type: "object"
+        properties:
+          debts:
+            type: "object"
+            properties:
+              filePath:
+                type: "string"
+
+  Case:
     type: "object"
     properties:
+      id:
+        type: "number"
+      exitReason:
+        type: "string"
+        enum:
+          - "Paid"
+          - "DebtorEmigrated"
+          - "Dead"
+          - "Objection"
+          - "Withdrawn"
+          - "OfferFromUs"
+          - "OfferFromDebtor"
+          - "DebtRelief"
+          - "Bankruptcy"
+          - "ForcedDissolved"
+          - "ConflictOfInterest"
+          - "NegativePayoff"
+          - "Overpayment"
+          - "Minor"
+          - "Irrecoverable"
+          - "PartiallyPaid"
+          - "CreditorUnresponsive"
+          - "ErrorCreditor"
+          - "ErrorUs"
+          - "Expiration"
+          - "Departed"
+          - "Unidentified"
+          - "AddressUnknown"
+      isCompany:
+        type: "boolean"
+      hasFoundation:
+        type: "boolean"
+      caseId:
+        type: "string"
+      createdAt:
+        type: "string"
+      ownerId:
+        type: "string"
+      caseGroup:
+        type: "string"
+      status:
+        type: "string"
+        enum:
+          - "PENDING"
+          - "VERIFIED"
+          - "CANCELED"
+          - "ENDED"
+      statusTime:
+        type: "string"
+      creditorReferenceId:
+        type: "string"
+      collectorId:
+        type: "string"
+      debtorContactId:
+        type: "string"
+      chainId:
+        type: "string"
+      alternativeContactId:
+        type: "string"
+      creditor:
+        type: "object"
+      debtors:
+        type: "object"
+      contactPerson:
+        type: "object"
+      alternativeContact:
+        type: "object"
+      financials:
+        type: "object"
+
+  NewEconomy:
+    type: "object"
+    properties:
+      eventType:
+        type: "string"
+      caseId:
+        type: "string"
+      refVoucherId:
+        type: "string"
+      description:
+        type: "string"
+      file:
+        $ref: "#/definitions/File"
+      referenceId:
+        type: "string"
+      typeId:
+        type: "string"
+      fromCreditor:
+        type: "boolean"
+      price:
+        $ref: "#/definitions/Price"
+      interest:
+        type: "number"
+      issueDate:
+        type: "string"
+      dueDate:
+        type: "string"
+      interestStartDate:
+        type: "string"
+      interestEndDate:
+        type: "string"
+
+  Economy:
+    type: "object"
+    properties:
+      eventType:
+        type: "string"
+      voucherId:
+        type: "string"
+      caseId:
+        type: "string"
+      refVoucherId:
+        type: "string"
+      description:
+        type: "string"
+      category:
+        type: "string"
+      createdAt:
+        type: "string"
+      file:
+        $ref: "#/definitions/File"
+      referenceId:
+        type: "string"
+      typeId:
+        type: "string"
+      fromCreditor:
+        type: "boolean"
+      price:
+        $ref: "#/definitions/Price"
+      interest:
+        type: "number"
+      issueDate:
+        type: "string"
+      dueDate:
+        type: "string"
+      interestStartDate:
+        type: "string"
+      interestEndDate:
+        type: "string"
+      debtorId:
+        type: "string"
+
+  Creditor:
+    type: "object"
+    properties:
+      creditorId:
+        type: "string"
       name:
         type: "string"
-      email:
+      ownerId:
         type: "string"
-      aksConfig:
+      defaultChainId:
         type: "string"
+      defaultCollectorId:
+        type: "string"
+
   NewWebhook:
     type: "object"
     properties:
@@ -214,5 +484,5 @@ definitions:
         type: "string"
 
 externalDocs:
-  description: "Find out more about Cosmo"
-  url: "https://debbie.dk/cosmo"
+  description: "Find out more about Debbie"
+  url: "https://debbie.dk"
