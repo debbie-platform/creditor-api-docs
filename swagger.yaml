@@ -190,15 +190,15 @@ paths:
               $ref: "#/definitions/Webhook"
 
 /hooks/:id:
-  delete:
-    tags:
-      - "Webhooks"
-    summary: "Delete webhook"
-    description: "Delete created webhook"
-    operationId: "delete-webhook"
-    responses:
-      "200":
-        description: "Successful operation"
+    delete:
+      tags:
+        - "Webhooks"
+      summary: "Delete webhook"
+      description: "Delete created webhook"
+      operationId: "delete-webhook"
+      responses:
+        "200":
+          description: "Successful operation"
 
 securityDefinitions:
   Query Parameter:
