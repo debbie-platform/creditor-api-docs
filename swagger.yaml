@@ -1,17 +1,15 @@
 openapi: 3.0.1
 
 info:
-  title: Debbie Platform API Docs
+  title: Debbie Creditor API Docs
   description:
     The Debbie APIs is a RESTful interface, allowing you to programmatically
     update, add and access your data in the platform. It provides predictable URLs
     for accessing resources, and uses built-in HTTP features to receive commands and
     return responses. This makes it easy to communicate with third party systems.
-  contact:
-    email: support@debbie.dk
   version: v0.1.0
   x-logo:
-    url: https://debbie-platform.github.io/platform-api-docs/deb-logo.svg
+    url: https://debbie-platform.github.io/creditor-api-docs/deb-logo.svg
 
 externalDocs:
   description: Find out more about Debbie here
@@ -365,6 +363,49 @@ components:
         - address
         - zipcode
         - city
+
+    NewVoucher:
+      type: object
+      properties:
+        voucherTypeId:
+          type: string
+          format: uuid
+          description: An id for the voucher type. A list of ids can be found in the Voucher Type Ids chapter.
+        amount:
+          type: integer
+          description: Amount in base currency. For example 1€ should be sent as 100.
+        referenceId:
+          type: string
+        interest:
+          type: number
+          description: Used when the voucher is yearly interest to specify the interest rate. The number is in decimal, for example 0.1 would be an interest rate of 10%.
+        date:
+          type: string
+        interestStartDate:
+          type: string
+        interestEndDate:
+          type: string
+        dueDate:
+          type: string
+        appendix:
+          $ref: "#/components/schemas/NewVoucherFile"
+          description: The appendix is for pdf copies or similar for a voucher.
+        imposedByCreditor:
+          type: boolean
+          description: Used to signify whether the voucher is imposed by the creditor (as opposed to the collector).
+        tags:
+          type: array
+          items:
+            type: string
+        referenceVouchers:
+          type: array
+          items:
+            $ref: "#/components/schemas/NewVoucher"
+      required:
+        - voucherTypeId
+        - amount
+        - date
+        - imposedByCreditor
 
     NewCase:
       type: object
