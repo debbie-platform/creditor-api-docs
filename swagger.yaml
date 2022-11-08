@@ -72,6 +72,13 @@ paths:
             format: uuid
           required: true
           description: Id of the tenant the case is being created for
+        - in: query
+          name: creditorId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Id of the creditor which the case belongs to
       requestBody:
         description: New case object
         content:
@@ -80,7 +87,6 @@ paths:
               $ref: "#/components/schemas/NewCase"
             example:
               referenceId: Your id
-              creditorId: debbie creditor uuid
               isCompany: false
               currency: EUR
               debtors:
@@ -425,10 +431,6 @@ components:
     NewCase:
       type: object
       properties:
-        creditorId:
-          type: string
-          format: uuid
-          description: Id of the creditor which the case belongs to
         referenceId:
           type: string
         chainId:
