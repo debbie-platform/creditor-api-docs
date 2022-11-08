@@ -364,6 +364,21 @@ components:
         - zipcode
         - city
 
+    NewVoucherFile:
+      type: object
+      properties:
+        fileName:
+          type: string
+        contentType:
+          type: string
+        fileId:
+          type: string
+          format: uuid
+      required:
+        - fileName
+        - contentType
+        - fileId
+
     NewVoucher:
       type: object
       properties:
