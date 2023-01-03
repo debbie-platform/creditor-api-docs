@@ -135,6 +135,50 @@ paths:
           description: Invalid input data
           content: {}
       x-codegen-request-body-name: body
+      
+    /collection-engine/v1/{tenantId}/cases/{id}:
+    patch:
+      tags:
+        - Cases
+      summary: Update a case
+      description: Updates attributes of a case given the cases id
+      operationId: update-case
+      parameters:
+        - in: path
+          name: tenantId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Id of the tenant the case belongs to
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Id the case to be updated
+      requestBody:
+        description: Update case object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCase"
+            example:
+              status: ENDED
+              reason: PAID
+
+        required: true
+      responses:
+        204:
+          description: Successful operation
+          content: {}
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        422:
+          description: Invalid input data
+          content: {}
+      x-codegen-request-body-name: body
 
   /collection-engine/v1/{tenantId}/links/{creditorId}/{caseReferenceId}/debtor-web:
     get:
@@ -427,6 +471,24 @@ components:
         - amount
         - date
         - imposedByCreditor
+
+    UpdateCase:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: ["PENDING", "VERIFIED", "ENDED"]
+          description: The updated status of the case
+        reason:
+          type: string
+          enum: ["PAID", "ERROR_CREDITOR"]
+          description: Used to provide a reason when the status is changed to ended
+        isCompany:
+          type: boolean
+          description: Used to indicate whether the entity is a company (true) or private (false)
+        leaveDebtor:
+          type: boolean
+          description: Used to indicate whether the debtors should be unaffected or not when updating isCompany
 
     NewCase:
       type: object
