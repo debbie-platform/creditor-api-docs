@@ -477,7 +477,7 @@ components:
       properties:
         status:
           type: string
-          enum: ["PENDING", "VERIFIED", "ENDED"]
+          enum: ["VERIFIED", "ENDED"]
           description: The updated status of the case
         reason:
           type: string
@@ -486,9 +486,6 @@ components:
         isCompany:
           type: boolean
           description: Used to indicate whether the entity is a company (true) or private (false)
-        leaveDebtor:
-          type: boolean
-          description: Used to indicate whether the debtors should be unaffected or not when updating isCompany
 
     NewCase:
       type: object
