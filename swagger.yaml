@@ -135,7 +135,7 @@ paths:
           description: Invalid input data
           content: {}
       x-codegen-request-body-name: body
-      
+
     /collection-engine/v1/{tenantId}/cases/{id}:
     patch:
       tags:
@@ -414,6 +414,20 @@ components:
         - zipcode
         - city
 
+    NewProperty:
+      type: object
+      properties:
+        handle:
+          type: string
+        data:
+          type: object
+          properties:
+            text:
+              type: string
+      required:
+        - handle
+        - data
+
     NewVoucherFile:
       type: object
       properties:
@@ -492,6 +506,8 @@ components:
       properties:
         referenceId:
           type: string
+        migratedId:
+          type: string
         chainId:
           type: string
           format: uuid
@@ -535,6 +551,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/NewVoucher"
+        properties:
+          type: array
+          items:
+            $ref: "#/components/schemas/NewProperty"
       required:
         - referenceId
         - isCompany
