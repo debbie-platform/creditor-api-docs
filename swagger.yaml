@@ -158,6 +158,13 @@ paths:
             format: uuid
           required: true
           description: Id the case to be updated
+        - in: query
+          name: creditorId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Id of the creditor which the case belongs to
       requestBody:
         description: Update case object
         content:
