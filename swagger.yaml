@@ -334,6 +334,13 @@ paths:
             format: uuid
           required: true
           description: Id of the tenant the file is being created for
+        - in: query
+          name: creditorId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Id of the creditor which the case belongs to
       requestBody:
         description: New file object
         content:
