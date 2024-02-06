@@ -240,68 +240,6 @@ paths:
           $ref: "#/components/responses/UnprocessableContent"
       x-codegen-request-body-name: body
 
-  NewCustomer:
-    type: object
-    properties:
-      isCompany:
-        type: boolean
-        description: Is the customer a company
-      referenceId:
-        type: string
-        description: Creditors' reference id for the customer
-      users:
-        type: array
-        items:
-          type: object
-          properties:
-            contact:
-              type: boolean
-              description: If the user should be the contact person on cases
-            lang:
-              $ref: "#/components/schemas/Language"
-              description: The language of the debtor
-            relation:
-              type: string
-              enum: ["debtor", "alternative-contact"]
-              description: User relation to customer
-            details:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: Name of the user
-                cpr:
-                  type: string
-                  description: The cpr number of a user, only used when user is a person.
-                cvr:
-                  type: string
-                  description: The cvr number of a user, only used when user is a company.
-                email:
-                  type: string
-                  description: The email of the user
-                phone:
-                  type: object
-                  description: The users' phone number with locale
-                  properties:
-                    number:
-                      type: string
-                      description: The users' phone number. For example 12345678.
-                    locale:
-                      type: string
-                      description: The users' phone locale. For example 45.
-                address:
-                  $ref: "#/components/schemas/Address"
-                  description: The debtors address
-              required:
-                - name
-          required:
-            - relation
-            - lang
-    required:
-      - isCompany
-      - users
-      - referenceId
-
   /collection-engine/v1/{tenantId}/links/{creditorId}/{caseReferenceId}/debtor-web:
     get:
       tags:
@@ -672,6 +610,68 @@ components:
       required:
         - id
         - caseSeqId
+
+    NewCustomer:
+    type: object
+    properties:
+      isCompany:
+        type: boolean
+        description: Is the customer a company
+      referenceId:
+        type: string
+        description: Creditors' reference id for the customer
+      users:
+        type: array
+        items:
+          type: object
+          properties:
+            contact:
+              type: boolean
+              description: If the user should be the contact person on cases
+            lang:
+              $ref: "#/components/schemas/Language"
+              description: The language of the debtor
+            relation:
+              type: string
+              enum: ["debtor", "alternative-contact"]
+              description: User relation to customer
+            details:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the user
+                cpr:
+                  type: string
+                  description: The cpr number of a user, only used when user is a person.
+                cvr:
+                  type: string
+                  description: The cvr number of a user, only used when user is a company.
+                email:
+                  type: string
+                  description: The email of the user
+                phone:
+                  type: object
+                  description: The users' phone number with locale
+                  properties:
+                    number:
+                      type: string
+                      description: The users' phone number. For example 12345678.
+                    locale:
+                      type: string
+                      description: The users' phone locale. For example 45.
+                address:
+                  $ref: "#/components/schemas/Address"
+                  description: The debtors address
+              required:
+                - name
+          required:
+            - relation
+            - lang
+    required:
+      - isCompany
+      - users
+      - referenceId
 
     CustomerCreated:
       type: object
