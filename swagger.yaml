@@ -21,6 +21,8 @@ servers:
 tags:
   - name: Cases
     description: Endpoints for interacting with cases
+  - name: Customers
+    description: Endpoints for interacting with customers
   - name: Files
     description: Endpoints for interacting with files
   - name: Links
@@ -86,24 +88,9 @@ paths:
             schema:
               $ref: "#/components/schemas/NewCase"
             example:
-              referenceId: Your id
               isCompany: false
               currency: EUR
-              debtors:
-                - isCompany: false
-                  name: Jane Doe
-                  cpr: "1234567890"
-                  email: jane@example.com
-                  phone:
-                    locale: "46"
-                    number: "88888888"
-                  lang: "da"
-                  address:
-                    address: Byvej 2A, 1. tv 0012, Tune
-                    coAddress:
-                    city: Roskilde
-                    zipcode: "4000"
-                    country: Danmark
+              customerId: a7fcf07c-74f2-40d9-8ea6-e67b07b14ca4
               vouchers:
                 - referenceId: Fakt. 123456
                   voucherTypeId: eb41e58e-fccf-419d-a771-cd5027fe6e87
@@ -130,15 +117,17 @@ paths:
       responses:
         200:
           description: Successful operation
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CaseCreated"
         401:
           $ref: "#/components/responses/UnauthorizedError"
         422:
-          description: Invalid input data
-          content: {}
+          $ref: "#/components/responses/UnprocessableContent"
       x-codegen-request-body-name: body
 
-    /collection-engine/v1/{tenantId}/cases/{id}:
+  /collection-engine/v1/{tenantId}/cases/{id}:
     patch:
       tags:
         - Cases
@@ -188,6 +177,130 @@ paths:
           description: Invalid input data
           content: {}
       x-codegen-request-body-name: body
+
+  /collection-engine/v1/{tenantId}/customers:
+    post:
+      tags:
+        - Customers
+      summary: Create new customer
+      description: Create new customer allows the api consumer to create a customer related to a creditor
+      operationId: create-customer
+      parameters:
+        - in: path
+          name: tenantId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Id of the tenant the case is being created for
+        - in: query
+          name: creditorId
+          schema:
+            type: string
+          required: true
+          description: Creditor id that the customer is related to
+      requestBody:
+        description: New customer object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewCustomer"
+            example:
+              isCompany: false
+              referenceId: "123"
+              users:
+                contact: true
+                lang: da
+                relation: debtor
+                details:
+                  name: Hans Hansen
+                  email: example@debbie.dk
+                  phone:
+                    locale: "45"
+                    number: "12345678"
+                  address:
+                    address: Applebys Plads 7, 1.
+                    coAddress: null
+                    city: København K
+                    zipcode: "1411"
+                  cpr: "1209981919"
+                  cvr: null
+
+        required: true
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerCreated"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        422:
+          $ref: "#/components/responses/UnprocessableContent"
+      x-codegen-request-body-name: body
+
+  NewCustomer:
+    type: object
+    properties:
+      isCompany:
+        type: boolean
+        description: Is the customer a company
+      referenceId:
+        type: string
+        description: Creditors' reference id for the customer
+      users:
+        type: array
+        items:
+          type: object
+          properties:
+            contact:
+              type: boolean
+              description: If the user should be the contact person on cases
+            lang:
+              $ref: "#/components/schemas/Language"
+              description: The language of the debtor
+            relation:
+              type: string
+              enum: ["debtor", "alternative-contact"]
+              description: User relation to customer
+            details:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the user
+                cpr:
+                  type: string
+                  description: The cpr number of a user, only used when user is a person.
+                cvr:
+                  type: string
+                  description: The cvr number of a user, only used when user is a company.
+                email:
+                  type: string
+                  description: The email of the user
+                phone:
+                  type: object
+                  description: The users' phone number with locale
+                  properties:
+                    number:
+                      type: string
+                      description: The users' phone number. For example 12345678.
+                    locale:
+                      type: string
+                      description: The users' phone locale. For example 45.
+                address:
+                  $ref: "#/components/schemas/Address"
+                  description: The debtors address
+              required:
+                - name
+          required:
+            - relation
+            - lang
+    required:
+      - isCompany
+      - users
+      - referenceId
 
   /collection-engine/v1/{tenantId}/links/{creditorId}/{caseReferenceId}/debtor-web:
     get:
@@ -520,14 +633,12 @@ components:
     NewCase:
       type: object
       properties:
-        referenceId:
-          type: string
-        migratedId:
-          type: string
-        chainId:
+        customerId:
           type: string
           format: uuid
-          description: Id of the chain the case is to go through
+          description: Id of the customer which the case belongs to
+        migratedId:
+          type: string
         currency:
           type: string
           enum: [DKK, SEK, NOK, USD, EUR, GBP, CHF]
@@ -535,42 +646,6 @@ components:
         isCompany:
           type: boolean
           description: Does the case concern a company
-        debtors:
-          type: array
-          items:
-            type: object
-            properties:
-              isCompany:
-                type: boolean
-              name:
-                type: string
-              cpr:
-                type: string
-                description: The cpr number of a debtor, only used when debtor is a person.
-              cvr:
-                type: string
-                description: The cvr number of a debtor, only used when debtor is a company.
-              email:
-                type: string
-              phone:
-                type: object
-                description: The users' phone number with locale
-                properties:
-                  number:
-                    type: string
-                    description: The users' phone number. For example 12345678.
-                  locale:
-                    type: string
-                    description: The users' phone locale. For example 45.
-              lang:
-                type: string
-                description: The language of the debtor
-              address:
-                $ref: "#/components/schemas/Address"
-                description: The debtors address
-            required:
-              - isCompany
-              - name
         vouchers:
           type: array
           items:
@@ -580,10 +655,210 @@ components:
           items:
             $ref: "#/components/schemas/NewProperty"
       required:
-        - referenceId
         - isCompany
-        - debtors
+        - customerId
         - vouchers
+
+    CaseCreated:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Id of the case
+        caseSeqId:
+          type: number
+          description: Debbies sequential id of the case
+      required:
+        - id
+        - caseSeqId
+
+    CustomerCreated:
+      type: object
+      properties:
+        customerId:
+          type: string
+          format: uuid
+          description: Id of the customer
+      required:
+        - customerId
+
+    Language:
+      type: string
+      enum:
+        [
+          bm,
+          ba,
+          eu,
+          be,
+          bn,
+          bh,
+          bi,
+          bs,
+          br,
+          bg,
+          my,
+          ca,
+          ch,
+          ce,
+          ny,
+          zh,
+          cv,
+          kw,
+          co,
+          cr,
+          hr,
+          cs,
+          da,
+          dv,
+          nl,
+          dz,
+          en,
+          eo,
+          et,
+          ee,
+          fo,
+          fj,
+          fi,
+          fr,
+          ff,
+          gl,
+          ka,
+          de,
+          el,
+          gn,
+          gu,
+          ht,
+          ha,
+          he,
+          hz,
+          hi,
+          ho,
+          hu,
+          ia,
+          id,
+          ie,
+          ga,
+          ig,
+          ik,
+          io,
+          is,
+          it,
+          iu,
+          ja,
+          jv,
+          kl,
+          kn,
+          kr,
+          ks,
+          kk,
+          km,
+          ki,
+          rw,
+          ky,
+          kv,
+          kg,
+          ko,
+          ku,
+          kj,
+          la,
+          lb,
+          lg,
+          li,
+          ln,
+          lo,
+          lt,
+          lu,
+          lv,
+          gv,
+          mk,
+          mg,
+          ms,
+          ml,
+          mt,
+          mi,
+          mr,
+          mh,
+          mn,
+          na,
+          nv,
+          nd,
+          ne,
+          ng,
+          nb,
+          nn,
+          no,
+          ii,
+          nr,
+          oc,
+          oj,
+          cu,
+          om,
+          or,
+          os,
+          pa,
+          pi,
+          fa,
+          pl,
+          ps,
+          pt,
+          qu,
+          rm,
+          rn,
+          ro,
+          ru,
+          sa,
+          sc,
+          sd,
+          se,
+          sm,
+          sg,
+          sr,
+          gd,
+          sn,
+          si,
+          sk,
+          sl,
+          so,
+          st,
+          es,
+          su,
+          sw,
+          ss,
+          sv,
+          ta,
+          te,
+          tg,
+          th,
+          ti,
+          bo,
+          tk,
+          tl,
+          tn,
+          to,
+          tr,
+          ts,
+          tt,
+          tw,
+          ty,
+          ug,
+          uk,
+          ur,
+          uz,
+          ve,
+          vi,
+          vo,
+          wa,
+          cy,
+          wo,
+          fy,
+          xh,
+          yi,
+          yo,
+          za,
+          zu,
+        ]
+      description: Language.
 
     LinkResponse:
       type: object
@@ -595,6 +870,8 @@ components:
   responses:
     UnauthorizedError:
       description: Access token missing or invalid
+    UnprocessableContent:
+      description: Unable to process the contained instructions.
     ConflictError:
       description: Conflict
 
