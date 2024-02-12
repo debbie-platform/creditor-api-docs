@@ -91,26 +91,26 @@ paths:
               isCompany: false
               currency: EUR
               customerId: a7fcf07c-74f2-40d9-8ea6-e67b07b14ca4
-              vouchers:
+              caseVouchers:
                 - referenceId: Fakt. 123456
                   voucherTypeId: eb41e58e-fccf-419d-a771-cd5027fe6e87
                   amount: -259900
-                  imposedByCreditor: true
+                  source: "CREDITOR"
                   date: "2020-05-01 00:00:00.000+01"
                   dueDate: "2020-05-08 00:00:00.000+01"
                   referenceVouchers:
                     - interestStartDate: "2020-06-01 00:00:00.000+01"
                       amount: 0
-                      imposedByCreditor: false
+                      source: "COLLECTOR"
                       voucherTypeId: ca4af363-9925-436c-83d6-23b3db6ed5d2
                       date: "2020-06-01 00:00:00.000+01"
                     - voucherTypeId: 3e51bf87-3c8f-4dd5-abd5-69417d113c89
                       amount: -10000
-                      imposedByCreditor: true
+                      source: "CREDITOR"
                       date: "2020-05-28 00:00:00.000+01"
                     - voucherTypeId: 3e51bf87-3c8f-4dd5-abd5-69417d113c89
                       amount: -10000
-                      imposedByCreditor: true
+                      source: "CREDITOR"
                       date: "2020-06-07 00:00:00.000+01"
 
         required: true
@@ -510,7 +510,7 @@ components:
         - contentType
         - fileId
 
-    NewVoucher:
+     NewCaseVoucher:
       type: object
       properties:
         voucherTypeId:
@@ -522,6 +522,9 @@ components:
           description: Amount in base currency. For example 1€ should be sent as 100.
         referenceId:
           type: string
+        currency:
+          type: string
+          enum: [DKK, SEK, NOK, USD, EUR, GBP, CHF]
         interest:
           type: number
           description: Used when the voucher is yearly interest to specify the interest rate. The number is in decimal, for example 0.1 would be an interest rate of 10%.
@@ -536,22 +539,20 @@ components:
         appendix:
           $ref: "#/components/schemas/NewVoucherFile"
           description: The appendix is for pdf copies or similar for a voucher.
-        imposedByCreditor:
-          type: boolean
-          description: Used to signify whether the voucher is imposed by the creditor (as opposed to the collector).
-        tags:
-          type: array
-          items:
-            type: string
+        source:
+          type: string
+          enum: [CREDITOR, COLLECTOR]
+          description: The source of the voucher
         referenceVouchers:
           type: array
           items:
-            $ref: "#/components/schemas/NewVoucher"
+            $ref: "#/components/schemas/NewCaseVoucher"
       required:
         - voucherTypeId
         - amount
         - date
-        - imposedByCreditor
+        - source
+        - currency
 
     UpdateCase:
       type: object
@@ -584,10 +585,10 @@ components:
         isCompany:
           type: boolean
           description: Does the case concern a company
-        vouchers:
+        caseVouchers:
           type: array
           items:
-            $ref: "#/components/schemas/NewVoucher"
+            $ref: "#/components/schemas/NewCaseVoucher"
         properties:
           type: array
           items:
