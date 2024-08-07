@@ -205,42 +205,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetCustomer"
-              example:
-                id: 123456
-                customerId: 268b30d2-e895-42b9-8a38-2451a87e19b2
-                isCompany: false
-                referenceId: "123"
-                users:
-                  - contact: true
-                    lang: en
-                    relation: debtor
-                    details:
-                      name: Hans Hansen
-                      email: email@example.com
-                      phone:
-                        locale: "45"
-                        number: "12345678"
-                      address:
-                        address: Applebys Plads 7, 1.
-                        coAddress: null
-                        city: København K
-                        zipcode: "1411"
-                        country: Danmark
-                cases:
-                  - caseId: 268b30d2-e895-42b9-8a38-2451a87e19b2
-                    status: PENDING
-                    statusTime: 2022-04-19T07:30:21.070Z
-                    exitReason: null
-                    createdAt: 2022-04-19T07:30:21.070Z
-        401:
-          $ref: "#/components/responses/UnauthorizedError"
-        422:
-          $ref: "#/components/responses/UnprocessableContent"
+                $ref: "#/components/schemas/CustomerCreated"
       x-codegen-request-body-name: body
  
   /collection-engine/v1/{tenantId}/customers/{customerId}:
-    post:
+    get:
       tags:
         - Customers
       summary: Get customer
@@ -256,6 +225,73 @@ paths:
           description: Id of the tenant the case is being created for
         - in: path
           name: customerId
+          schema:
+            type: string
+          required: true
+          description: Customer id that the customer is related to
+        - in: query
+          name: creditorId
+          schema:
+            type: string
+          required: true
+          description: Creditor id that the customer is related to
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetCustomer"
+                example:
+                  id: 123456
+                  customerId: 268b30d2-e895-42b9-8a38-2451a87e19b2
+                  isCompany: false
+                  referenceId: "123"
+                  users:
+                    - contact: true
+                      lang: en
+                      relation: debtor
+                      details:
+                        name: Hans Hansen
+                        email: email@example.com
+                        phone:
+                          locale: "45"
+                          number: "12345678"
+                        address:
+                          address: Applebys Plads 7, 1.
+                          coAddress: null
+                          city: København K
+                          zipcode: "1411"
+                          country: Danmark
+                  cases:
+                    - caseId: 268b30d2-e895-42b9-8a38-2451a87e19b2
+                      status: PENDING
+                      statusTime: 2022-04-19T07:30:21.070Z
+                      exitReason: null
+                      createdAt: 2022-04-19T07:30:21.070Z
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        422:
+          $ref: "#/components/responses/UnprocessableContent"
+      x-codegen-request-body-name: body
+  
+  /collection-engine/v1/{tenantId}/customers/by-reference-id/{referenceId}:
+    get:
+      tags:
+        - Customers
+      summary: Get customer by reference id
+      description: Get a customer by customer reference id
+      operationId: get-customer-by-reference-id
+      parameters:
+        - in: path
+          name: tenantId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Id of the tenant the case is being created for
+        - in: path
+          name: referenceId
           schema:
             type: string
           required: true
