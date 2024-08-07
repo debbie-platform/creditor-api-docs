@@ -244,8 +244,8 @@ paths:
       tags:
         - Customers
       summary: Get customer
-      description: Get customer allows the api consumer to get a customer by customerId
-      operationId: create-customer
+      description: Get a customer by customer id
+      operationId: get-customer
       parameters:
         - in: path
           name: tenantId
@@ -254,18 +254,18 @@ paths:
             format: uuid
           required: true
           description: Id of the tenant the case is being created for
+        - in: path
+          name: customerId
+          schema:
+            type: string
+          required: true
+          description: Customer id that the customer is related to
         - in: query
           name: creditorId
           schema:
             type: string
           required: true
           description: Creditor id that the customer is related to
-        - in: query
-          name: customerId
-          schema:
-            type: string
-          required: true
-          description: Customer id that the customer is related to
       requestBody:
         description: New customer object
         content:
