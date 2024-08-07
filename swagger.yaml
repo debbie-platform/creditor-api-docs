@@ -268,9 +268,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: "#/components/schemas/NewCaseVoucher"
+              type: object
+              properties:
+                caseVouchers:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/NewCaseVoucher"
             example:
               caseVouchers:
                 - currency: DKK
