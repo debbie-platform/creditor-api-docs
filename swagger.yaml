@@ -236,6 +236,60 @@ paths:
                 $ref: "#/components/schemas/CustomerCreated"
       x-codegen-request-body-name: body
  
+  /collection-engine/v1/{tenantId}/customers/{customerId}/add-vouchers:
+    post:
+      tags:
+        - Customers
+      summary: Add vouchers to customer
+      description: Add new customer to a customer
+      operationId: add-vouchers-to-customer
+      parameters:
+        - in: path
+          name: tenantId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Id of the tenant the customer is related to
+        - in: path
+          name: customerId
+          schema:
+            type: string
+          required: true
+          description: Customer id
+        - in: query
+          name: creditorId
+          schema:
+            type: string
+          required: true
+          description: Creditor id that the customer is related to
+      requestBody:
+        description: List of new case vouchers
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/NewCaseVoucher"
+            example:
+              - currency: DKK
+                amount: 100000
+                referenceId: D12412347
+                text: J.no. 1234
+                date: "2020-05-28 00:00:00.000+01"
+                source: "CREDITOR"
+                voucherTypeId: eb41e58e-fccf-419d-a771-cd5027fe6e87
+
+        required: true
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerCreated"
+      x-codegen-request-body-name: body
+ 
   /collection-engine/v1/{tenantId}/customers/{customerId}:
     get:
       tags:
@@ -250,7 +304,7 @@ paths:
             type: string
             format: uuid
           required: true
-          description: Id of the tenant the case is being created for
+          description: Id of the tenant the customer is related to
         - in: path
           name: customerId
           schema:
@@ -317,7 +371,7 @@ paths:
             type: string
             format: uuid
           required: true
-          description: Id of the tenant the case is being created for
+          description: Id of the tenant the customer is related to
         - in: path
           name: referenceId
           schema:
@@ -932,6 +986,54 @@ components:
                   type: number
                 longitude:
                   type: number
+
+    NewCaseVoucher:
+      type: object
+      properties:
+        voucherTypeId:
+          type: string
+          format: uuid
+          description: An id for the voucher type. A list of ids can be found in the Voucher Type Ids chapter.
+        amount:
+          type: integer
+          description: Amount in base currency. For example 1€ should be sent as 100.
+        referenceId:
+          type: string
+        currency:
+          type: string
+          enum: [DKK, SEK, NOK, USD, EUR, GBP, CHF]
+        interest:
+          type: number
+          description: Used when the voucher is yearly interest to specify the interest rate. The number is in decimal, for example 0.1 would be an interest rate of 10%.
+        date:
+          type: string
+        interestStartDate:
+          type: string
+        interestEndDate:
+          type: string
+        dueDate:
+          type: string
+        appendix:
+          $ref: "#/components/schemas/NewVoucherFile"
+          description: The appendix is for pdf copies or similar for a voucher.
+        source:
+          type: string
+          enum: [CREDITOR, COLLECTOR]
+          description: The source of the voucher
+        referenceCaseVoucherId:
+          type: string
+          format: uuid
+          description: The id of the voucher that this voucher is a child of.
+        referenceVouchers:
+          type: array
+          items:
+            $ref: "#/components/schemas/NewCaseVoucher"
+      required:
+        - voucherTypeId
+        - amount
+        - date
+        - source
+        - currency
 
     CaseEndReason:
       nullable: true
