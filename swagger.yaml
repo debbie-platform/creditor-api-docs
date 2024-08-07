@@ -256,7 +256,7 @@ paths:
           schema:
             type: string
           required: true
-          description: Customer id that the customer is related to
+          description: Customer id of the customer
         - in: query
           name: creditorId
           schema:
@@ -270,33 +270,33 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetCustomer"
-                example:
-                  id: 123456
-                  customerId: 268b30d2-e895-42b9-8a38-2451a87e19b2
-                  isCompany: false
-                  referenceId: "123"
-                  users:
-                    - contact: true
-                      lang: en
-                      relation: debtor
-                      details:
-                        name: Hans Hansen
-                        email: email@example.com
-                        phone:
-                          locale: "45"
-                          number: "12345678"
-                        address:
-                          address: Applebys Plads 7, 1.
-                          coAddress: null
-                          city: København K
-                          zipcode: "1411"
-                          country: Danmark
-                  cases:
-                    - caseId: 268b30d2-e895-42b9-8a38-2451a87e19b2
-                      status: PENDING
-                      statusTime: 2022-04-19T07:30:21.070Z
-                      exitReason: null
-                      createdAt: 2022-04-19T07:30:21.070Z
+              example:
+                id: 123456
+                customerId: 268b30d2-e895-42b9-8a38-2451a87e19b2
+                isCompany: false
+                referenceId: "123"
+                users:
+                  - contact: true
+                    lang: en
+                    relation: debtor
+                    details:
+                      name: Hans Hansen
+                      email: email@example.com
+                      phone:
+                        locale: "45"
+                        number: "12345678"
+                      address:
+                        address: Applebys Plads 7, 1.
+                        coAddress: null
+                        city: København K
+                        zipcode: "1411"
+                        country: Danmark
+                cases:
+                  - caseId: 268b30d2-e895-42b9-8a38-2451a87e19b2
+                    status: PENDING
+                    statusTime: 2022-04-19T07:30:21.070Z
+                    exitReason: null
+                    createdAt: 2022-04-19T07:30:21.070Z
         401:
           $ref: "#/components/responses/UnauthorizedError"
         422:
