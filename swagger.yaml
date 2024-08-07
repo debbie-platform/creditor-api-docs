@@ -96,22 +96,22 @@ paths:
 #                   voucherTypeId: eb41e58e-fccf-419d-a771-cd5027fe6e87
 #                   amount: -259900
 #                   imposedByCreditor: true
-#                   date: "2020-05-01 00:00:00.000+01"
-#                   dueDate: "2020-05-08 00:00:00.000+01"
+#                   date: "2024-05-01 00:00:00.000+01"
+#                   dueDate: "2024-05-08 00:00:00.000+01"
 #                   referenceVouchers:
-#                     - interestStartDate: "2020-06-01 00:00:00.000+01"
+#                     - interestStartDate: "2024-06-01 00:00:00.000+01"
 #                       amount: 0
 #                       imposedByCreditor: false
 #                       voucherTypeId: ca4af363-9925-436c-83d6-23b3db6ed5d2
-#                       date: "2020-06-01 00:00:00.000+01"
+#                       date: "2024-06-01 00:00:00.000+01"
 #                     - voucherTypeId: 3e51bf87-3c8f-4dd5-abd5-69417d113c89
 #                       amount: -10000
 #                       imposedByCreditor: true
-#                       date: "2020-05-28 00:00:00.000+01"
+#                       date: "2024-05-28 00:00:00.000+01"
 #                     - voucherTypeId: 3e51bf87-3c8f-4dd5-abd5-69417d113c89
 #                       amount: -10000
 #                       imposedByCreditor: true
-#                       date: "2020-06-07 00:00:00.000+01"
+#                       date: "2024-06-07 00:00:00.000+01"
 
 #         required: true
 #       responses:
@@ -240,9 +240,9 @@ paths:
     post:
       tags:
         - Customers
-      summary: Add vouchers to customer
-      description: Add new customer to a customer
-      operationId: add-vouchers-to-customer
+      summary: Add case vouchers
+      description: Add new case vouchers to a customer
+      operationId: add-case-vouchers-to-customer
       parameters:
         - in: path
           name: tenantId
@@ -272,13 +272,14 @@ paths:
               items:
                 $ref: "#/components/schemas/NewCaseVoucher"
             example:
-              - currency: DKK
-                amount: 100000
-                referenceId: D12412347
-                text: J.no. 1234
-                date: "2020-05-28 00:00:00.000+01"
-                source: "CREDITOR"
-                voucherTypeId: eb41e58e-fccf-419d-a771-cd5027fe6e87
+              caseVouchers:
+                - currency: DKK
+                  amount: -100000
+                  referenceId: D12412347
+                  text: J.no. 1234
+                  date: "2024-05-28 00:00:00.000+01"
+                  source: "CREDITOR"
+                  voucherTypeId: eb41e58e-fccf-419d-a771-cd5027fe6e87
 
         required: true
       responses:
@@ -287,7 +288,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CustomerCreated"
+                $ref: "#/components/schemas/CaseVoucherAddedToCustomer"
       x-codegen-request-body-name: body
  
   /collection-engine/v1/{tenantId}/customers/{customerId}:
@@ -1034,6 +1035,21 @@ components:
         - date
         - source
         - currency
+
+    CaseVoucherAddedToCustomer:
+      type: object
+      properties:
+        merged:
+          type: boolean
+          description: Whether the new case voucher was merged with an existing one
+        caseId:
+          type: string
+          format: uuid
+          description: Id of the case that the case voucher is added to
+        caseVoucherId:
+          type: string
+          format: uuid
+          description: Id of the case new case voucher
 
     CaseEndReason:
       nullable: true
