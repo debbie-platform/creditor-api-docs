@@ -58,7 +58,7 @@ tags:
       | --- | --- |
       | Deposit (Indbetaling)               | c51f2f6a-8081-45ef-b52d-5e0569fdf12e |
 
-# paths:
+paths:
 #   /collection-engine/v1/{tenantId}/cases:
 #     post:
 #       tags:
