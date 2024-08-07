@@ -298,7 +298,7 @@ paths:
     get:
       tags:
         - Customers
-      summary: Get customer
+      summary: Get customer by id
       description: Get a customer by customer id
       operationId: get-customer
       parameters:
@@ -1024,10 +1024,6 @@ components:
           type: string
           enum: [CREDITOR, COLLECTOR]
           description: The source of the voucher
-        referenceCaseVoucherId:
-          type: string
-          format: uuid
-          description: The id of the voucher that this voucher is a child of.
         referenceVouchers:
           type: array
           items:
